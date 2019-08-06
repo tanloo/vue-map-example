@@ -11,11 +11,12 @@
         <i class="el-icon-map-location"></i>
         <span>地图</span>
       </template>
-      <el-menu-item index="Bmap">百度地图</el-menu-item>
-      <el-menu-item index="Amap">高德地图</el-menu-item>
-      <el-menu-item index="Leaflet">Leaflet</el-menu-item>
+      <el-menu-item index="bmap">百度地图</el-menu-item>
+      <el-menu-item index="amap">高德地图</el-menu-item>
+        <el-menu-item index="tmap">天地图</el-menu-item>
+      <el-menu-item index="leaflet">Leaflet</el-menu-item>
     </el-submenu>
-    <el-menu-item index="Info">
+    <el-menu-item index="info">
       <i class="el-icon-search"></i>
       <span slot="title">信息查询</span>
     </el-menu-item>
@@ -31,5 +32,8 @@ export default {};
   background-color: #464c5b !important;
   height: 100%;
   border-right: solid 0px #e6e6e6 !important;
+}
+.el-menu-item {
+  padding-right: 0px;
 }
 </style>

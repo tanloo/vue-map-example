@@ -4,11 +4,11 @@
       <Header />
     </el-header>
     <el-container>
-      <el-aside width="180px">
+      <el-aside width="200px">
         <SideBar />
       </el-aside>
       <el-main>
-        <router-view />
+        <router-view></router-view>
       </el-main>
     </el-container>
   </el-container>
