@@ -30,6 +30,8 @@ import axios from "axios";
 import { mapActions, mapState } from "vuex";
 import TMapUtil from "../utils/TMap";
 import store from "../store";
+import funnyapi from "../api/funnyapi";
+
 export default {
   mounted() {
     this.initT();
@@ -107,7 +109,23 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           const that = this;
-          axios
+          funnyapi.search_poi(
+            {
+              ps: this.form.num,
+              pn: 1,
+              wd: this.form.keyword,
+              lng: this.form.lon,
+              lat: this.form.lat
+            },
+            data => {
+              if (data.status === 1) {
+                that.setPOI(data.data);
+              } else if (data.status === 2) {
+                window.alert("该坐标点" + data.msg.toString());
+              }
+            }
+          );
+         /*  axios
             .get("http://192.168.5.16:9999/search_poi", {
               params: {
                 ps: this.form.num,
@@ -126,7 +144,7 @@ export default {
             })
             .catch(error => {
               window.alert("出现异常：" + error);
-            });
+            }); */
           that.geocode.getLocation(
             new T.LngLat(this.form.lon, this.form.lat),
             searchResult => {

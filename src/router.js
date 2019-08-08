@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import TMap from './components/views/TmapView';
-import infoView from './components/views/InfoView';
+import InfoView from './components/views/InfoView';
+import LeafletView from './components/views/LeafletView';
 Vue.use(Router);
 
 export default new Router({
@@ -13,7 +14,12 @@ export default new Router({
         {
             path: "/info",
             name: "info",
-            component: infoView
+            component: InfoView
+        },
+        {
+            path: "/lmap",
+            name: "lmap",
+            component: LeafletView
         }
     ]
 })
