@@ -5,7 +5,7 @@
       type="danger"
       icon="el-icon-delete"
       @click.stop="claerMark"
-      v-show="isClick"
+      v-show="hasPoints"
     >清除标记</el-button>
   </div>
 </template>
@@ -13,7 +13,7 @@
 <script>
 import BaiduMap from "../../utils/TMap";
 import axios from "axios";
-import { mapState, mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   data() {
@@ -23,33 +23,46 @@ export default {
       lay: "",
       map: "",
       geocode: null,
-      isClick: false
+      hasPoints: false
     };
   },
-  computed: mapState({
-    poiPoints: state => state.points.poiPoints,
-    mainPoint: state => state.points.mainPoint
-  }),
+  computed: {
+    ...mapState(["queryParams"])
+  },
   mounted() {
     this.initMap();
   },
   methods: {
     ...mapActions(["setPOI", "setMainPoint"]),
-    addMark(e) {
+    deliverMethod(e) {
+      if (e.keyword == undefined && this.queryParams.keyword == "") {
+        this.addMark({
+          lat: e.lnglat.getLat(),
+          lon: e.lnglat.getLng(),
+          wd: "美食",
+          ps: 20,
+          pn: 1
+        });
+      } else {
+        this.addMark({
+          lat: e.lat || e.lnglat.getLat(),
+          lon: e.lon || e.lnglat.getLng(),
+          wd: e.keyword || this.queryParams.keyword,
+          ps: e.num || this.queryParams.num,
+          pn: 1
+        });
+      }
+    },
+    addMark({ lat, lon, wd, ps, pn }) {
       const that = this;
       const T = this.T;
-      let wd = "美食";
-      let lat = e.lnglat.getLat();
-      let lng = e.lnglat.getLng();
-      let ps = 20;
-      let pn = 1;
       axios
-        .get("http://192.168.5.16:8888/search_poi", {
+        .get("http://192.168.5.16:9999/search_poi", {
           params: {
             ps,
             pn,
             wd,
-            lng,
+            lng: lon,
             lat
           }
         })
@@ -70,39 +83,54 @@ export default {
                 let markerInfoWin = new T.InfoWindow(el[1], {
                   offset: new T.Point(0, -30)
                 });
-                that.map.openInfoWindow(markerInfoWin, e.lnglat);
+                that.map.openInfoWindow(
+                  markerInfoWin,
+                  new T.LngLat(el[5], el[6])
+                );
               });
             });
-          } else {
-            window.alert("接口异常！");
+          } else if (data.status === 2) {
+            window.alert("该坐标点" + data.msg.toString());
           }
         })
         .catch(error => {
           window.alert("出现异常：" + error);
         });
-      let mainMark = new that.T.Marker(new T.LngLat(lng, lat));
+      let mainMark = new that.T.Marker(new T.LngLat(lon, lat));
       that.map.addOverLay(mainMark);
-      that.geocode.getLocation(e.lnglat, searchResult => {
+      that.geocode.getLocation(new T.LngLat(lon, lat), searchResult => {
         if (searchResult.status === "0") {
           that.setMainPoint({
             addressComponent: searchResult.addressComponent,
             location: searchResult.location
           });
+          let infoAddress = "";
+          if (
+            searchResult.formatted_address === "" ||
+            searchResult.formatted_address == null
+          ) {
+            infoAddress =
+              searchResult.addressComponent.nation +
+              searchResult.addressComponent.province +
+              searchResult.addressComponent.city +
+              searchResult.addressComponent.city +
+              searchResult.addressComponent.county +
+              searchResult.addressComponent.address;
+          } else {
+            infoAddress = searchResult.formatted_address;
+          }
           mainMark.addEventListener("click", function(e) {
-            let markerInfoWin = new T.InfoWindow(
-              searchResult.formatted_address,
-              {
-                offset: new T.Point(0, -30)
-              }
-            );
-            that.map.openInfoWindow(markerInfoWin, e.lnglat);
+            let markerInfoWin = new T.InfoWindow(infoAddress, {
+              offset: new T.Point(0, -30)
+            });
+            that.map.openInfoWindow(markerInfoWin, new T.LngLat(lon, lat));
           });
         } else {
           window.alert("逆地理编码异常！");
         }
       });
       that.map.removeEventListener("click");
-      that.isClick = true;
+      that.hasPoints = true;
     },
     initMap() {
       BaiduMap.init()
@@ -113,9 +141,20 @@ export default {
           let config = {
             projection: "EPSG:4326"
           };
-          this.map = new T.Map(this.$refs.mapDiv, config); // 初始化地图对象
-          this.map.centerAndZoom(new T.LngLat(121.47, 31.23), this.zoom); // 设置显示地图的中心点和级别
-          this.map.addEventListener("click", this.addMark);
+          this.map = new T.Map(this.$refs.mapDiv, config);
+          this.map.centerAndZoom(new T.LngLat(121.47, 31.23), this.zoom);
+          if (
+            this.queryParams.keyword !== undefined &&
+            this.queryParams.keyword !== ""
+          ) {
+            this.map.centerAndZoom(
+              new T.LngLat(this.queryParams.lon, this.queryParams.lat),
+              13
+            );
+            this.deliverMethod(this.queryParams);
+          } else {
+            this.map.addEventListener("click", this.deliverMethod);
+          }
         })
         .catch(error => {
           window.alert("地图初始化异常：" + error);
@@ -125,8 +164,8 @@ export default {
       this.map.clearOverLays();
       this.map.closeInfoWindow();
       this.map.removeEventListener("click");
-      this.map.addEventListener("click", this.addMark);
-      this.isClick = false;
+      this.map.addEventListener("click", this.deliverMethod);
+      this.hasPoints = false;
     }
   }
 };

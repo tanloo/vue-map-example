@@ -18,7 +18,7 @@
     </el-submenu>
     <el-menu-item index="info">
       <i class="el-icon-search"></i>
-      <span slot="title">信息查询</span>
+      <span slot="title">信息结果</span>
     </el-menu-item>
   </el-menu>
 </template>
