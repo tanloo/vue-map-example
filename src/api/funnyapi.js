@@ -8,6 +8,7 @@ export default {
             data
         }) => {
             fun(data);
+            
         }).catch(error => {
             window.alert("接口出现异常：" + error);
         });

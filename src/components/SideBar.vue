@@ -12,8 +12,7 @@
         <span>地图</span>
       </template>
       <el-menu-item index="bmap">百度地图</el-menu-item>
-      <el-menu-item index="amap">高德地图</el-menu-item>
-        <el-menu-item index="tmap">天地图</el-menu-item>
+      <el-menu-item index="tmap">天地图</el-menu-item>
       <el-menu-item index="lmap">Leaflet</el-menu-item>
     </el-submenu>
     <el-menu-item index="info">

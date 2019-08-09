@@ -1,37 +1,40 @@
 <template>
-  <el-form ref="form" :model="form" label-position="left" :rules="rules">
-    <el-form-item label="查询关键词" prop="keyword">
-      <el-input v-model.trim="form.keyword"></el-input>
-    </el-form-item>
-    <el-form-item label="经度" prop="lon">
-      <el-input v-model="form.lon" @change="onLonChange"></el-input>
-    </el-form-item>
-    <el-form-item label="纬度" prop="lat">
-      <el-input v-model="form.lat" @change="onLatChange"></el-input>
-    </el-form-item>
-    <el-form-item label="查询数量">
-      <el-select v-model="form.num" placeholder="请选择查询数量(默认10)">
-        <el-option label="10" value="10"></el-option>
-        <el-option label="20" value="20"></el-option>
-        <el-option label="30" value="30"></el-option>
-        <el-option label="40" value="40"></el-option>
-        <el-option label="50" value="50"></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="success" @click="handleSave">保存参数</el-button>
-      <el-button type="primary" @click="handleQuery">立即查询</el-button>
-    </el-form-item>
-  </el-form>
+  <el-row :gutter="20" style="width:100%;height:100%;">
+    <el-col :span="8" :offset="8">
+      <el-card shadow="hover">
+        <el-form ref="form" :model="form" label-position="left" :rules="rules">
+          <el-form-item label="查询关键词" prop="keyword">
+            <el-input v-model.trim="form.keyword"></el-input>
+          </el-form-item>
+          <el-form-item label="经度" prop="lon">
+            <el-input v-model="form.lon" @change="onLonChange"></el-input>
+          </el-form-item>
+          <el-form-item label="纬度" prop="lat">
+            <el-input v-model="form.lat" @change="onLatChange"></el-input>
+          </el-form-item>
+          <el-form-item label="查询数量">
+            <el-select v-model="form.num" placeholder="请选择查询数量(默认10)">
+              <el-option label="10" value="10"></el-option>
+              <el-option label="20" value="20"></el-option>
+              <el-option label="30" value="30"></el-option>
+              <el-option label="40" value="40"></el-option>
+              <el-option label="50" value="50"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="success" @click="handleSave">保存参数</el-button>
+            <el-button type="primary" @click="handleQuery">立即查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
-import axios from "axios";
 import { mapActions, mapState } from "vuex";
-import TMapUtil from "../utils/TMap";
-import store from "../store";
-import funnyapi from "../api/funnyapi";
-
+import TMapUtil from "../../../utils/TMap";
+import funnyapi from "../../../api/funnyapi";
 export default {
   mounted() {
     this.initT();
@@ -104,6 +107,10 @@ export default {
         lat: this.form.lat,
         num: this.form.num
       });
+      this.$message({
+        message: "参数保存成功！",
+        type: "success"
+      });
     },
     handleQuery() {
       this.$refs.form.validate(valid => {
@@ -119,34 +126,23 @@ export default {
             },
             data => {
               if (data.status === 1) {
+                this.$message({
+                  message:
+                    "查询成功，关键词“" +
+                    this.form.keyword +
+                    "”，共查到" +
+                    data.data.length +
+                    "条结果！",
+                  type: "success"
+                });
                 that.setPOI(data.data);
               } else if (data.status === 2) {
                 window.alert("该坐标点" + data.msg.toString());
               }
             }
           );
-         /*  axios
-            .get("http://192.168.5.16:9999/search_poi", {
-              params: {
-                ps: this.form.num,
-                pn: 1,
-                wd: this.form.keyword,
-                lng: this.form.lon,
-                lat: this.form.lat
-              }
-            })
-            .then(function({ data }) {
-              if (data.status === 1) {
-                that.setPOI(data.data);
-              } else if (data.status === 2) {
-                window.alert("该坐标点" + data.msg.toString());
-              }
-            })
-            .catch(error => {
-              window.alert("出现异常：" + error);
-            }); */
           that.geocode.getLocation(
-            new T.LngLat(this.form.lon, this.form.lat),
+            new that.T.LngLat(this.form.lon, this.form.lat),
             searchResult => {
               if (searchResult.status === "0") {
                 that.setMainPoint({

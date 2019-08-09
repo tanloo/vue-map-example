@@ -16,13 +16,11 @@ const actions = {
     setPOI({
         commit
     }, points) {
-        //funnyapi.search_poi(points => commit("setPoiPoints", points), params);
         commit("setPoiPoints", points)
     },
     setMainPoint({
         commit
     }, point) {
-        //funnyapi.gis(point => commit("setMainPoint", point), params);
         commit("setMainPoint", point);
     }
 }

@@ -11,11 +11,10 @@
 </template>
 
 <script>
-import TMapUtil from "../../utils/TMap";
-import LMapUtil from "../../utils/Leaflet";
-import axios from "axios";
+import TMapUtil from "../../../utils/TMap";
+import LMapUtil from "../../../utils/Leaflet";
 import { mapActions, mapState } from "vuex";
-import funnyapi from "../../api/funnyapi";
+import funnyapi from "../../../api/funnyapi";
 
 export default {
   mounted() {
@@ -110,12 +109,20 @@ export default {
         },
         data => {
           if (data.status === 1) {
+            this.$message({
+              message:
+                "查询成功，关键词“" +
+                wd +
+                "”，共查到" +
+                data.data.length +
+                "条结果！",
+              type: "success"
+            });
             that.setPOI(data.data);
-            let markers = [];
             const customIcon = that.L.icon({
               iconUrl: "http://api.tianditu.gov.cn/img/map/markerA.png",
-              iconSize: [19, 27], // size of the icon
-              popupAnchor: [0, -10] // point from which the popup should open relative to the iconAnchor
+              iconSize: [19, 27], 
+              popupAnchor: [0, -10] 
             });
             data.data.forEach(el => {
               let marker = that.L.marker([el[6], el[5]], {

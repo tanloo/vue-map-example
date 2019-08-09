@@ -7,7 +7,7 @@
     </el-row>
     <el-row>
       <el-col :span="24">
-        <el-tabs type="border-card">
+        <el-tabs type="border-card" style="background:whitesmoke">
           <el-tab-pane label="点击点信息">
             <el-col :span="24">
               <MainPointTable />
@@ -26,18 +26,12 @@
 </template>
 
 <script>
-import MainPointTable from "../MainPointTable";
-import POITable from "../POITable";
-import SearchConfigForm from "../SearchConfigForm";
+import MainPointTable from "./MainPointTable";
+import POITable from "./POITable";
+import SearchConfigForm from "./SearchConfigForm";
 
 export default {
-  components: { MainPointTable, POITable, SearchConfigForm },
-  data() {
-    return {};
-  },
-  computed: {},
-  methods: {},
-  mounted() {}
+  components: { MainPointTable, POITable, SearchConfigForm }
 };
 </script>
 

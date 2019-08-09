@@ -2,7 +2,6 @@
   <div class="header-menu">
     <div class="div-img">
       <img src="../assets/cloud_logo.png" />
-      
     </div>
 
     <div class="right-menu">

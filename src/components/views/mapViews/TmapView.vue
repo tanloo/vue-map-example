@@ -11,10 +11,9 @@
 </template>
  
 <script>
-import TMapUtil from "../../utils/TMap";
-import axios from "axios";
+import TMapUtil from "../../../utils/TMap";
 import { mapActions, mapState } from "vuex";
-import funnyapi from "../../api/funnyapi";
+import funnyapi from "../../../api/funnyapi";
 
 export default {
   data() {
@@ -66,6 +65,15 @@ export default {
         },
         data => {
           if (data.status === 1) {
+            this.$message({
+              message:
+                "查询成功，关键词“" +
+                wd +
+                "”，共查到" +
+                data.data.length +
+                "条结果！",
+              type: "success"
+            });
             that.setPOI(data.data);
             const customIcon = new T.Icon({
               iconUrl: "http://api.tianditu.gov.cn/img/map/markerA.png",
@@ -77,7 +85,7 @@ export default {
                 icon: customIcon
               });
               that.map.addOverLay(customMark);
-              customMark.addEventListener("click", function(e) {
+              customMark.addEventListener("click", function() {
                 let markerInfoWin = new T.InfoWindow(el[1], {
                   offset: new T.Point(0, -30)
                 });
@@ -114,7 +122,7 @@ export default {
           } else {
             infoAddress = searchResult.formatted_address;
           }
-          mainMark.addEventListener("click", function(e) {
+          mainMark.addEventListener("click", function() {
             let markerInfoWin = new T.InfoWindow(infoAddress, {
               offset: new T.Point(0, -30)
             });
@@ -166,7 +174,7 @@ export default {
 };
 </script>
  
-<style scoped>
+<style>
 .mapDiv {
   width: 100%;
   height: 100%;
